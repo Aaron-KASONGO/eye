@@ -8,6 +8,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { FloatingAction } from 'react-native-floating-action';
 import { router } from 'expo-router';
 import { CardImage } from '@/components/card-image/CardImage';
+import axios from 'axios';
 
 const actions = [
   {
@@ -24,12 +25,52 @@ const actions = [
   }
 ];
 
+const mainPath = "https://zany-acorn-vwgwqjr6v6jhp7g5-8000.app.github.dev/detect-object"
+
 export default function TabOneScreen() {
   const [permission, requestPermission] = useCameraPermissions();
 
+  // const fileToBlob = async (file: File) => {
+  //   try {
+  //     const response = await fetch(file.uri);
+  //     const blob = await response.blob(); // Conversion du fichier en Blob
+  //     return blob;
+  //   } catch (error) {
+  //     console.error('Erreur lors de la conversion du fichier en Blob:', error);
+  //   }
+  // };
+
   const pickImage = async () => {
     const response = await DocumentPicker.getDocumentAsync({type: 'image/*'});
-    console.log(response);
+
+    const formData = new FormData();
+    
+    // if (response.assets) {
+    //   console.log(response.assets[0].uri)
+    // }
+
+    if (response.assets) {
+      const file = response.assets[0]
+
+      console.log(file.uri);
+
+      formData.append('file', {
+        uri: file.uri,
+        type: file.mimeType,
+        name: file.name
+      } as any)
+
+      const resp = await axios.post(mainPath, formData, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      console.log(resp.data);
+    }
+    
+
   }
   return (
     <View
