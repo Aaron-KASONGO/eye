@@ -21,7 +21,7 @@ export default function TabLayout() {
   return (
     <Stack>
       <Stack.Screen name='index' options={{
-        title: "Tab one"
+        title: "Accueil"
       }} />
       <Stack.Screen name='two' options={{
         title: "Two"

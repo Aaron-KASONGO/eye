@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 const ActionLayout = () => {
   return (
     <Stack
+        
     >
         <Stack.Screen
             name='camera'
@@ -27,7 +28,9 @@ const ActionLayout = () => {
                     </View>
                     </>
                 )
-            } }}
+            }
+        }}
+            
         />
     </Stack>
   )
