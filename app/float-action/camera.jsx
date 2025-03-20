@@ -28,6 +28,8 @@ const Camera = () => {
             <CameraView
                 style={styles.cameraView}
                 ref={cameraRef}
+                autofocus='on'
+                
             >
             </CameraView>
             <View
