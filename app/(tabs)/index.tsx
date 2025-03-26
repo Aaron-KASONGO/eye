@@ -9,13 +9,15 @@ import { FloatingAction } from 'react-native-floating-action';
 import { router } from 'expo-router';
 import { CardImage } from '@/components/card-image/CardImage';
 import axios from 'axios';
+import { Audio } from 'expo-av';
+import { useEffect, useState } from 'react';
 
 const actions = [
   {
     text: "Photo",
     icon: <Entypo name='camera' color={'white'} size={20} />,
     name: "bt_photo",
-    position: 2
+    position: 2,
   },
   {
     text: "Charger",
@@ -28,7 +30,9 @@ const actions = [
 const mainPath = "https://zany-acorn-vwgwqjr6v6jhp7g5-8000.app.github.dev/detect-object"
 
 export default function TabOneScreen() {
+  const [loading, setLoading] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+  const [permissionResponseAudio, requestPermissionAudio] = Audio.usePermissions();
 
   // const fileToBlob = async (file: File) => {
   //   try {
@@ -41,6 +45,7 @@ export default function TabOneScreen() {
   // };
 
   const pickImage = async () => {
+    setLoading(true);
     const response = await DocumentPicker.getDocumentAsync({type: 'image/*'});
 
     const formData = new FormData();
@@ -54,24 +59,54 @@ export default function TabOneScreen() {
 
       console.log(file.uri);
 
+
       formData.append('file', {
         uri: file.uri,
         type: file.mimeType,
         name: file.name
       } as any)
 
-      const resp = await axios.post(mainPath, formData, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        }
-      });
+      // const respon = await axios.get('https://zany-acorn-vwgwqjr6v6jhp7g5-8000.app.github.dev')
+      // console.log(respon)
 
-      console.log(resp.data);
+      // const resp = await axios.post(mainPath, formData, {
+      //   headers: {
+      //     'Accept': 'application/json',
+      //     'Content-Type': 'multipart/form-data',
+      //   }
+      // });
+      await playSound();
+      setLoading(false);
+      // console.log(resp.data);
     }
-    
 
   }
+
+  const playSound = async () => {
+    const { sound } = await Audio.Sound.createAsync({
+      uri: 'https://res.cloudinary.com/mouss/video/upload/v1742964704/music_test/mxvfvh432bjf0dgsempt.mp3'
+    });
+    sound.playAsync();
+  }
+
+  const getPermissionAudio = async () => {
+    try {
+      if (permissionResponseAudio?.status !== 'granted') {
+        console.log('Requesting permission...');
+        await requestPermission();
+      }
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+    } catch (error) {
+      console.error('Failed to start recording', error);
+    }
+  }
+
+  useEffect(() => {
+    getPermissionAudio();
+  }, []);
   return (
     <View
       style={{
@@ -94,13 +129,15 @@ export default function TabOneScreen() {
           >
           <Text
             style={styles.sectionText}
+            accessibilityLabel="Charger une image"
+            accessibilityHint="Bouton pour charger l'image"
           >Charger une image</Text>
             
           </Pressable>
       </View>
     
       <FloatingAction
-      
+        
         actions={actions}
         onPressItem={name => {
           switch (name) {

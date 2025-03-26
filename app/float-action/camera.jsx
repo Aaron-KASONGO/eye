@@ -1,11 +1,13 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from 'expo-router';
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const Camera = () => {
+    const [loading, setLoading] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
 
@@ -16,9 +18,19 @@ const Camera = () => {
     }
 
     const takePicture = async () => {
+        setLoading(true);
         const response = await cameraRef.current.takePictureAsync();
+        playSound();
         console.log(response)
+        setLoading(false);
     }
+
+    const playSound = async () => {
+        const { sound } = await Audio.Sound.createAsync({
+          uri: 'https://res.cloudinary.com/mouss/video/upload/v1742964704/music_test/mxvfvh432bjf0dgsempt.mp3'
+        });
+        sound.playAsync();
+      }
 
   return (
     <>
