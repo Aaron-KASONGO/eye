@@ -11,6 +11,8 @@ import { CardImage } from '@/components/card-image/CardImage';
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 const actions = [
   {
@@ -122,18 +124,32 @@ export default function TabOneScreen() {
             flex: 1
           }}
         >
-          <FontAwesome name='cloud-upload' color={"rgba(6, 65, 201, 1)"} size={100} />
-          <Pressable
-            style={styles.button}
-            onPress={() => pickImage()}
-          >
-          <Text
-            style={styles.sectionText}
-            accessibilityLabel="Charger une image"
-            accessibilityHint="Bouton pour charger l'image"
-          >Charger une image</Text>
-            
-          </Pressable>
+          {
+            loading ? (
+              <>
+                <Spinner
+                  visible={loading}
+                  textContent={'Loading...'}
+                  textStyle={styles.spinnerTextStyle}
+                />
+              </>
+            ):(
+              <>
+                <FontAwesome name='cloud-upload' color={"rgba(6, 65, 201, 1)"} size={100} />
+                <Pressable
+                  style={styles.button}
+                  onPress={() => pickImage()}
+                >
+                <Text
+                  style={styles.sectionText}
+                  accessibilityLabel="Charger une image"
+                  accessibilityHint="Bouton pour charger l'image"
+                >Charger une image</Text>
+                  
+                </Pressable>
+              </>
+            )
+          }
       </View>
     
       <FloatingAction
@@ -176,5 +192,8 @@ const styles = StyleSheet.create({
   sectionText: {
     fontSize: 15,
     fontWeight: 'bold'
+  },
+  spinnerTextStyle: {
+    color: "#fff"
   }
 })
